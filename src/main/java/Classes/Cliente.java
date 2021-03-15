@@ -15,7 +15,6 @@ import java.text.ParseException;
  * @author Pichau
  */
 public class Cliente {
-    private String tabelaNome = "tbl_cliente";
     private int id;
     private String nome;
     private String cpf;
@@ -76,51 +75,5 @@ public class Cliente {
         this.idade = idade;
     }
      
-    public ResultSet index() throws SQLException {
-        PreparedStatement ps = Conexao.connection().prepareStatement(String.format("SELECT * FROM %s", tabelaNome));
-        ResultSet rs = ps.executeQuery();
-
-        return rs;
-    }
     
-    public ResultSet deletar(Integer id) throws SQLException {
-        PreparedStatement ps = Conexao.connection().prepareStatement("DELETE FROM tbl_cliente WHERE id_cliente = ?");
-        ps.setInt(1, id);
-
-        ps.executeUpdate();
-        return null;
-    }
-
-    public int editar(Cliente cliente) throws SQLException, ParseException {
-        PreparedStatement ps = null;
-        System.out.println("cliente" + cliente.getId( ));
-        try {
-            if (cliente.getId() == 0) {
-                ps = Conexao.connection().prepareStatement("INSERT INTO tbl_cliente (nome, cpf, endereco, idade) VALUES(?, ?, ?, ?)");
-                ps.setString(1, cliente.getNome());
-                ps.setString(2, cliente.getCpf());
-
-                ps.setString(3, cliente.getEndereco());
-                ps.setInt(4, cliente.getIdade());
-                
-            } else {
-                ps = Conexao.connection().prepareStatement("UPDATE tbl_cliente SET nome = ?, cpf = ?, endereco = ?, idade = ? WHERE id_cliente = ?");
-                ps.setString(1, cliente.getNome());
-                ps.setString(2, cliente.getCpf());
-                ps.setString(3, cliente.getEndereco());
-                ps.setInt(4, cliente.getIdade());
-                ps.setInt(5, cliente.getId());
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e + "error");
-        }
-        ps.executeUpdate();
-        ResultSet rs = ps.getGeneratedKeys();
-        int idx = 0;
-        if (rs.next()) {
-            idx = rs.getInt(1);
-        }
-        return idx;
-    }
 }

@@ -6,7 +6,7 @@
 package Interfaces;
 
 import Classes.Comissao;
-import Classes.Corretor;
+import dao.ComissaoDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -63,7 +63,7 @@ public class FrmComissao extends javax.swing.JFrame {
     }
     public void carregarTabela() throws SQLException{
           
-         Comissao a = new Comissao();
+         ComissaoDAO a = new ComissaoDAO();
          ResultSet data = a.index();
           
          DefaultTableModel model = (DefaultTableModel) this.tblComissao.getModel();
@@ -77,7 +77,7 @@ public class FrmComissao extends javax.swing.JFrame {
     public void add(Comissao comissao) throws SQLException, ParseException {
         DefaultTableModel model = (DefaultTableModel) this.tblComissao.getModel();
         comissao.setId(0);
-        int insertedId = comissao.editar(comissao);
+        int insertedId = ComissaoDAO.getInstance().editar(comissao);
         model.addRow(new Object[]{insertedId,comissao.getNome(), comissao.getValor()});
     }
       
@@ -88,7 +88,7 @@ public class FrmComissao extends javax.swing.JFrame {
         aux++;
         comissao.setId(aux);
         System.out.println("auxiliar" + aux);
-        comissao.editar(comissao);
+        ComissaoDAO.getInstance().editar(comissao);
   
     }
       public void delete(int row) throws SQLException {
@@ -105,7 +105,7 @@ public class FrmComissao extends javax.swing.JFrame {
         if (n == JOptionPane.YES_OPTION) {
             Comissao comissao = new Comissao();
             DefaultTableModel model = (DefaultTableModel) this.tblComissao.getModel();
-            comissao.deletar((Integer) this.tblComissao.getValueAt(row, 0));
+            ComissaoDAO.getInstance().deletar((Integer) this.tblComissao.getValueAt(row, 0));
             int[] rows = tblComissao.getSelectedRows();
             for (int i = 0; i < rows.length; i++) {
                 model.removeRow(rows[i] - i);

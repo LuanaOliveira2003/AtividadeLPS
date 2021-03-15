@@ -7,7 +7,7 @@ package Interfaces;
 
 
 import Classes.Corretor;
-import Classes.Conexao;
+import dao.CorretorDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -71,7 +71,7 @@ public class FrmCorretor extends javax.swing.JFrame {
     }
     public void carregarTabela() throws SQLException{
           
-         Corretor a = new Corretor();
+         CorretorDAO a = new CorretorDAO();
          ResultSet data = a.index();
           
          DefaultTableModel model = (DefaultTableModel) this.tblCorretor.getModel();
@@ -131,7 +131,7 @@ public class FrmCorretor extends javax.swing.JFrame {
       public void add(Corretor corretor) throws SQLException, ParseException {
         DefaultTableModel model = (DefaultTableModel) this.tblCorretor.getModel();
         corretor.setId(0);
-        int insertedId = corretor.editar(corretor);
+        int insertedId = CorretorDAO.getInstance().editar(corretor);
         model.addRow(new Object[]{insertedId,corretor.getNome(), corretor.getCpf(), corretor.getEndereco(), corretor.getIdade(), corretor.getSalario()});
     }
       
@@ -145,7 +145,7 @@ public class FrmCorretor extends javax.swing.JFrame {
         aux++;
         corretor.setId(aux);
         System.out.println("auxiliar" + aux);
-        corretor.editar(corretor);
+        CorretorDAO.getInstance().editar(corretor);
   
     }
       public void delete(int row) throws SQLException {
@@ -162,7 +162,7 @@ public class FrmCorretor extends javax.swing.JFrame {
         if (n == JOptionPane.YES_OPTION) {
             Corretor corretor = new Corretor();
             DefaultTableModel model = (DefaultTableModel) this.tblCorretor.getModel();
-            corretor.deletar((Integer) this.tblCorretor.getValueAt(row, 0));
+            CorretorDAO.getInstance().deletar((Integer) this.tblCorretor.getValueAt(row, 0));
             int[] rows = tblCorretor.getSelectedRows();
             for (int i = 0; i < rows.length; i++) {
                 model.removeRow(rows[i] - i);

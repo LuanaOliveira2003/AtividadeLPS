@@ -7,8 +7,9 @@ package Interfaces;
 
 
 
-import Classes.Corretor;
+
 import Classes.Imovel;
+import dao.ImovelDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -81,7 +82,7 @@ public class FrmImovel extends javax.swing.JFrame {
     }
     public void carregarTabela() throws SQLException{
           
-         Imovel a = new Imovel();
+         ImovelDAO a = new ImovelDAO();
          ResultSet data = a.index();
           
          DefaultTableModel model = (DefaultTableModel) this.tblImovel.getModel();
@@ -95,7 +96,7 @@ public class FrmImovel extends javax.swing.JFrame {
     public void add(Imovel imovel) throws SQLException, ParseException {
         DefaultTableModel model = (DefaultTableModel) this.tblImovel.getModel();
         imovel.setId(0);
-        int insertedId = imovel.editar(imovel);
+        int insertedId = ImovelDAO.getInstance().editar(imovel);
         model.addRow(new Object[]{insertedId,imovel.getCidade(), imovel.getEstado(), imovel.getCep(), imovel.getRua(), imovel.getBairro(), imovel.getNumero(), imovel.getReferencia(), imovel.getValor()});
     }
       
@@ -112,7 +113,7 @@ public class FrmImovel extends javax.swing.JFrame {
         aux++;
         imovel.setId(aux);
         System.out.println("auxiliar" + aux);
-        imovel.editar(imovel);
+        ImovelDAO.getInstance().editar(imovel);
   
     }
       public void delete(int row) throws SQLException {
@@ -130,7 +131,7 @@ public class FrmImovel extends javax.swing.JFrame {
             Imovel imovel = new Imovel();
             DefaultTableModel model = (DefaultTableModel) this.tblImovel.getModel();
             int x = Integer.parseInt((String) this.tblImovel.getValueAt(row, 0));
-            imovel.deletar(x);
+            ImovelDAO.getInstance().deletar(x);
             int[] rows = tblImovel.getSelectedRows();
             for (int i = 0; i < rows.length; i++) {
                 model.removeRow(rows[i] - i);
@@ -457,7 +458,7 @@ public class FrmImovel extends javax.swing.JFrame {
                
                 delete(row);
             } catch (SQLException ex) {
-                Logger.getLogger(Corretor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Imovel.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             showMessageDialog(this, "Nenhum registro selecionado");

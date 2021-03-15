@@ -6,6 +6,7 @@
 package Interfaces;
 
 import Classes.Cliente;
+import dao.ClienteDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -71,7 +72,7 @@ public class FrmCliente extends javax.swing.JFrame {
 
       public void carregarTabela() throws SQLException{
           
-         Cliente a = new Cliente();
+         ClienteDAO a = new ClienteDAO();
          ResultSet data = a.index();
           
          DefaultTableModel model = (DefaultTableModel) this.tblCliente.getModel();
@@ -131,7 +132,7 @@ public class FrmCliente extends javax.swing.JFrame {
       public void add(Cliente cliente) throws SQLException, ParseException {
         DefaultTableModel model = (DefaultTableModel) this.tblCliente.getModel();
         cliente.setId(0);
-        int insertedId = cliente.editar(cliente);
+        int insertedId = ClienteDAO.getInstance().editar(cliente);
         model.addRow(new Object[]{insertedId, cliente.getNome(), cliente.getCpf(), cliente.getEndereco(), cliente.getIdade()});
     }
       
@@ -144,7 +145,7 @@ public class FrmCliente extends javax.swing.JFrame {
         aux++;
         cliente.setId(aux);
         System.out.println("auxiliar" + aux);
-        cliente.editar(cliente);
+        ClienteDAO.getInstance().editar(cliente);
   
     }
       public void delete(int row) throws SQLException {
@@ -162,7 +163,7 @@ public class FrmCliente extends javax.swing.JFrame {
             Cliente cliente = new Cliente();
             DefaultTableModel model = (DefaultTableModel) this.tblCliente.getModel();
             
-            cliente.deletar((Integer) this.tblCliente.getValueAt(row, 0));
+            ClienteDAO.getInstance().deletar((Integer) this.tblCliente.getValueAt(row, 0));
             int[] rows = tblCliente.getSelectedRows();
             for (int i = 0; i < rows.length; i++) {
                 model.removeRow(rows[i] - i);
