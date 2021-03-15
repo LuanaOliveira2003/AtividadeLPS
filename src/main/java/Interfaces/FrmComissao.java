@@ -17,7 +17,6 @@ import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.MaskFormatter;
 
 public class FrmComissao extends javax.swing.JFrame {
 

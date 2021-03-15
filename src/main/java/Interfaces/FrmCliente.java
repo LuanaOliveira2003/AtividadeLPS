@@ -66,8 +66,7 @@ public class FrmCliente extends javax.swing.JFrame {
         edtCpf.setText(tblCliente.getModel().getValueAt(row, 2).toString());
         edtEndereco.setText(tblCliente.getModel().getValueAt(row, 3).toString());
         edtIdade.setText(tblCliente.getModel().getValueAt(row, 4).toString());
-        
-  
+
     }
 
       public void carregarTabela() throws SQLException{
