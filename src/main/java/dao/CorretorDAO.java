@@ -5,7 +5,7 @@
  */
 package dao;
 
-import Classes.Corretor;
+import Model.Corretor;
 import dao.ConexaoDAO;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -39,6 +39,7 @@ public class Main extends javax.swing.JFrame {
         btnImovel = new javax.swing.JButton();
         btnComissao = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -70,17 +71,20 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 25)); // NOI18N
-        jLabel1.setText("Gerenciamento");
+        jLabel1.setFont(new java.awt.Font("Tahoma", 2, 22)); // NOI18N
+        jLabel1.setText("Gerenciamento:");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 3, 25)); // NOI18N
+        jLabel2.setText("Venda de Imovéis");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(btnCliente)
                         .addGap(18, 18, 18)
                         .addComponent(btnCorretor)
@@ -88,22 +92,31 @@ public class Main extends javax.swing.JFrame {
                         .addComponent(btnImovel)
                         .addGap(18, 18, 18)
                         .addComponent(btnComissao))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(118, 118, 118)
-                        .addComponent(jLabel1)))
-                .addContainerGap(61, Short.MAX_VALUE))
+                    .addComponent(jLabel1))
+                .addContainerGap(55, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(91, Short.MAX_VALUE)
+                    .addComponent(jLabel2)
+                    .addGap(83, 83, 83)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(72, 72, 72)
                 .addComponent(jLabel1)
-                .addGap(33, 33, 33)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCliente)
                     .addComponent(btnCorretor)
                     .addComponent(btnImovel)
                     .addComponent(btnComissao))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(34, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(10, 10, 10)
+                    .addComponent(jLabel2)
+                    .addContainerGap(126, Short.MAX_VALUE)))
         );
 
         pack();
@@ -174,5 +187,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton btnCorretor;
     private javax.swing.JButton btnImovel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
 }

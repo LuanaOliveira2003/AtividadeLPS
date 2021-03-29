@@ -8,7 +8,8 @@ package Interfaces;
 
 
 
-import Classes.Imovel;
+import Controller.ImovelController;
+import Model.Imovel;
 import dao.ImovelDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -82,8 +83,9 @@ public class FrmImovel extends javax.swing.JFrame {
     }
     public void carregarTabela() throws SQLException{
           
-         ImovelDAO a = new ImovelDAO();
-         ResultSet data = a.index();
+         ImovelController controller = new ImovelController();
+         
+         ResultSet data = controller.index();
           
          DefaultTableModel model = (DefaultTableModel) this.tblImovel.getModel();
          
@@ -93,30 +95,31 @@ public class FrmImovel extends javax.swing.JFrame {
         }
       }
     
-    public void add(Imovel imovel) throws SQLException, ParseException {
+    public void add(String cidade, String estado, String cep, String rua, String bairro, int numero, String referencia, float valor) throws SQLException, ParseException {
         DefaultTableModel model = (DefaultTableModel) this.tblImovel.getModel();
-        imovel.setId(0);
-        int insertedId = ImovelDAO.getInstance().editar(imovel);
-        model.addRow(new Object[]{insertedId,imovel.getCidade(), imovel.getEstado(), imovel.getCep(), imovel.getRua(), imovel.getBairro(), imovel.getNumero(), imovel.getReferencia(), imovel.getValor()});
+        ImovelController controller = new ImovelController();
+        int insertedId = controller.salvar(0, cidade ,estado ,cep ,rua , bairro, numero,referencia, valor );
+        model.addRow(new Object[]{insertedId, cidade ,estado ,cep ,rua , bairro, numero,referencia, valor});
+ 
     }
       
-      public void edit(Imovel imovel) throws SQLException, ParseException {
-        this.tblImovel.setValueAt(imovel.getCidade(), row, 1);
-        this.tblImovel.setValueAt(imovel.getEstado(), row, 2);
-        this.tblImovel.setValueAt(imovel.getCep(), row, 3);
-        this.tblImovel.setValueAt(imovel.getRua(), row, 4);
-        this.tblImovel.setValueAt(imovel.getBairro(), row, 5);
-        this.tblImovel.setValueAt(imovel.getNumero(), row, 6);
-        this.tblImovel.setValueAt(imovel.getReferencia(), row, 7);
-        this.tblImovel.setValueAt(imovel.getValor(), row, 8);
-        int aux = imovel.getId();
-        aux++;
-        imovel.setId(aux);
-        System.out.println("auxiliar" + aux);
-        ImovelDAO.getInstance().editar(imovel);
+      public void edit(String cidade, String estado, String cep, String rua, String bairro, int numero, String referencia, float valor) throws SQLException, ParseException {
+        ImovelController controller = new ImovelController();
+        int x = Integer.parseInt((String) this.tblImovel.getValueAt(row, 0));
+        controller.salvar(x ,cidade ,estado ,cep ,rua , bairro, numero,referencia, valor);
+          
+        this.tblImovel.setValueAt(cidade, row, 1);
+        this.tblImovel.setValueAt(estado, row, 2);
+        this.tblImovel.setValueAt(cep, row, 3);
+        this.tblImovel.setValueAt(rua, row, 4);
+        this.tblImovel.setValueAt(bairro, row, 5);
+        this.tblImovel.setValueAt(numero, row, 6);
+        this.tblImovel.setValueAt(referencia, row, 7);
+        this.tblImovel.setValueAt(valor, row, 8);
   
     }
       public void delete(int row) throws SQLException {
+        ImovelController controller = new ImovelController();
         Object[] options = {"Sim, remover", "Cancelar!"};
         int n = JOptionPane.showOptionDialog(this,
                 "Tem certeza que deseja excluir o usuário?",
@@ -128,10 +131,9 @@ public class FrmImovel extends javax.swing.JFrame {
                 options[0]);
 
         if (n == JOptionPane.YES_OPTION) {
-            Imovel imovel = new Imovel();
             DefaultTableModel model = (DefaultTableModel) this.tblImovel.getModel();
             int x = Integer.parseInt((String) this.tblImovel.getValueAt(row, 0));
-            ImovelDAO.getInstance().deletar(x);
+            controller.delete(x);
             int[] rows = tblImovel.getSelectedRows();
             for (int i = 0; i < rows.length; i++) {
                 model.removeRow(rows[i] - i);
@@ -148,7 +150,7 @@ public class FrmImovel extends javax.swing.JFrame {
         btnEditar = new javax.swing.JButton();
         btnSalvar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
-        btnBuscar = new javax.swing.JButton();
+        btnVoltar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         pnlForm = new javax.swing.JPanel();
         edtId = new javax.swing.JTextField();
@@ -212,11 +214,11 @@ public class FrmImovel extends javax.swing.JFrame {
             }
         });
 
-        btnBuscar.setText("Buscar");
-        btnBuscar.setPreferredSize(new java.awt.Dimension(75, 30));
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+        btnVoltar.setText("Voltar");
+        btnVoltar.setPreferredSize(new java.awt.Dimension(75, 30));
+        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
+                btnVoltarActionPerformed(evt);
             }
         });
 
@@ -267,11 +269,11 @@ public class FrmImovel extends javax.swing.JFrame {
                         .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(edtBairro, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblBairro))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblNumero)
                             .addComponent(edtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 18, Short.MAX_VALUE)
+                        .addGap(41, 41, 41)
                         .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(edtReferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblReferencia))
@@ -372,9 +374,10 @@ public class FrmImovel extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(80, 80, 80))
                     .addComponent(jScrollPane2))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -389,7 +392,7 @@ public class FrmImovel extends javax.swing.JFrame {
                     .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(pnlForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -425,9 +428,8 @@ public class FrmImovel extends javax.swing.JFrame {
         if (this.edtCidade.getText().isEmpty() || this.edtEstado.getText().isEmpty()|| this.edtCep.getText().isEmpty()|| this.edtRua.getText().isEmpty()|| this.edtBairro.getText().isEmpty()|| this.edtNumero.getText().isEmpty()|| this.edtReferencia.getText().isEmpty()|| this.edtValor.getText().isEmpty()) {
                     showMessageDialog(this, "Por favor, preencha todos os campos!");
                 } else if (this.selectedId == 0) { //create
-                    Imovel imovel = new Imovel(id++, this.edtCidade.getText(), this.edtEstado.getText(), this.edtCep.getText(), this.edtRua.getText(), this.edtBairro.getText(), Integer.parseInt(edtNumero.getText()), this.edtReferencia.getText(), Integer.parseInt(edtValor.getText()));
                     try {
-                add(imovel);
+                       add(this.edtCidade.getText(), this.edtEstado.getText(), this.edtCep.getText(), this.edtRua.getText(), this.edtBairro.getText(), Integer.parseInt(edtNumero.getText()), this.edtReferencia.getText(), Integer.parseInt(edtValor.getText()));
                     } catch (SQLException ex) {
                         Logger.getLogger(FrmImovel.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ParseException ex) {
@@ -436,9 +438,8 @@ public class FrmImovel extends javax.swing.JFrame {
                     showMessageDialog(this, "Registro adicionado com sucesso!");
             this.limparCampos();
                 } else { //update
-                    Imovel imovel = new Imovel(this.selectedId, this.edtCidade.getText(), this.edtEstado.getText(), this.edtCep.getText(), this.edtRua.getText(), this.edtBairro.getText(), Integer.parseInt(edtNumero.getText()), this.edtReferencia.getText(), Integer.parseInt(edtValor.getText()));
                     try {
-                        edit(imovel);
+                        edit(this.edtCidade.getText(), this.edtEstado.getText(), this.edtCep.getText(), this.edtRua.getText(), this.edtBairro.getText(), Integer.parseInt(edtNumero.getText()), this.edtReferencia.getText(), Integer.parseInt(edtValor.getText()));
                     } catch (SQLException ex) {
                         Logger.getLogger(FrmImovel.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ParseException ex) {
@@ -465,9 +466,9 @@ public class FrmImovel extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnExcluirActionPerformed
 
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-     
-    }//GEN-LAST:event_btnBuscarActionPerformed
+    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+            this.dispose();
+    }//GEN-LAST:event_btnVoltarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
        this.limparCampos();
@@ -506,12 +507,12 @@ public class FrmImovel extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnNovo;
     private javax.swing.JButton btnSalvar;
+    private javax.swing.JButton btnVoltar;
     private javax.swing.JFormattedTextField edtBairro;
     private javax.swing.JTextField edtCep;
     private javax.swing.JTextField edtCidade;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Classes;
+package Model;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,27 +14,24 @@ import java.text.ParseException;
  *
  * @author Pichau
  */
-public class Corretor {
-
+public class Cliente {
     private int id;
     private String nome;
     private String cpf;
     private String endereco;
     private int idade;
-    private int salario;
     
     
-    public Corretor() {
+    public Cliente() {
         
     }
 
-    public Corretor(int id, String nome, String cpf, String endereco, int idade, int salario) {
+    public Cliente(int id, String nome, String cpf, String endereco, int idade) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
         this.endereco = endereco;
         this.idade = idade;
-        this.salario = salario;
     }
     
     
@@ -77,13 +74,6 @@ public class Corretor {
     public void setIdade(int idade) {
         this.idade = idade;
     }
-
-    public int getSalario() {
-        return salario;
-    }
-
-    public void setSalario(int salario) {
-        this.salario = salario;
-    }
-  
+     
+    
 }

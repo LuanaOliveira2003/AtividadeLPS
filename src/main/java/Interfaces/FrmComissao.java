@@ -5,8 +5,8 @@
  */
 package Interfaces;
 
-import Classes.Comissao;
-import dao.ComissaoDAO;
+import Controller.ComissaoController;
+import Model.Comissao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -62,8 +62,9 @@ public class FrmComissao extends javax.swing.JFrame {
     }
     public void carregarTabela() throws SQLException{
           
-         ComissaoDAO a = new ComissaoDAO();
-         ResultSet data = a.index();
+         ComissaoController controller = new ComissaoController();
+         
+         ResultSet data = controller.index();
           
          DefaultTableModel model = (DefaultTableModel) this.tblComissao.getModel();
          
@@ -73,24 +74,23 @@ public class FrmComissao extends javax.swing.JFrame {
         }
       }
     
-    public void add(Comissao comissao) throws SQLException, ParseException {
+    public void add(String nome, float valor) throws SQLException, ParseException {
         DefaultTableModel model = (DefaultTableModel) this.tblComissao.getModel();
-        comissao.setId(0);
-        int insertedId = ComissaoDAO.getInstance().editar(comissao);
-        model.addRow(new Object[]{insertedId,comissao.getNome(), comissao.getValor()});
+        ComissaoController controller = new ComissaoController();
+        int insertedId = controller.salvar(0, nome ,valor);
+        model.addRow(new Object[]{insertedId, nome, valor});
     }
       
-      public void edit(Comissao comissao) throws SQLException, ParseException {
-        this.tblComissao.setValueAt(comissao.getNome(), row, 1);
-        this.tblComissao.setValueAt(comissao.getValor(), row, 2);
-        int aux = comissao.getId();
-        aux++;
-        comissao.setId(aux);
-        System.out.println("auxiliar" + aux);
-        ComissaoDAO.getInstance().editar(comissao);
-  
+      public void edit(String nome, float valor) throws SQLException, ParseException {
+        ComissaoController controller = new ComissaoController();
+        int x = Integer.parseInt((String) this.tblComissao.getValueAt(row, 0));
+        controller.salvar(x ,nome ,valor);
+          
+        this.tblComissao.setValueAt(nome, row, 1);
+        this.tblComissao.setValueAt(valor, row, 2);
     }
       public void delete(int row) throws SQLException {
+        ComissaoController controller = new ComissaoController();
         Object[] options = {"Sim, remover", "Cancelar!"};
         int n = JOptionPane.showOptionDialog(this,
                 "Tem certeza que deseja excluir o usuário?",
@@ -102,9 +102,9 @@ public class FrmComissao extends javax.swing.JFrame {
                 options[0]);
 
         if (n == JOptionPane.YES_OPTION) {
-            Comissao comissao = new Comissao();
             DefaultTableModel model = (DefaultTableModel) this.tblComissao.getModel();
-            ComissaoDAO.getInstance().deletar((Integer) this.tblComissao.getValueAt(row, 0));
+            int x = Integer.parseInt((String) this.tblComissao.getValueAt(row, 0));
+            controller.delete(x);
             int[] rows = tblComissao.getSelectedRows();
             for (int i = 0; i < rows.length; i++) {
                 model.removeRow(rows[i] - i);
@@ -120,7 +120,7 @@ public class FrmComissao extends javax.swing.JFrame {
         btnEditar = new javax.swing.JButton();
         btnSalvar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
-        btnBuscar = new javax.swing.JButton();
+        btnVoltar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         pnlForm = new javax.swing.JPanel();
         edtId = new javax.swing.JTextField();
@@ -172,11 +172,11 @@ public class FrmComissao extends javax.swing.JFrame {
             }
         });
 
-        btnBuscar.setText("Buscar");
-        btnBuscar.setPreferredSize(new java.awt.Dimension(75, 30));
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+        btnVoltar.setText("Voltar");
+        btnVoltar.setPreferredSize(new java.awt.Dimension(75, 30));
+        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
+                btnVoltarActionPerformed(evt);
             }
         });
 
@@ -272,10 +272,10 @@ public class FrmComissao extends javax.swing.JFrame {
                                         .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(84, 84, 84)
                                 .addComponent(lblTitulo)))
@@ -294,7 +294,7 @@ public class FrmComissao extends javax.swing.JFrame {
                     .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addComponent(pnlForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -330,9 +330,8 @@ public class FrmComissao extends javax.swing.JFrame {
        if (this.edtNome.getText().isEmpty() || this.edtValor.getText().isEmpty()) {
                     showMessageDialog(this, "Por favor, preencha todos os campos!");
                 } else if (this.selectedId == 0) { //create
-                    Comissao comissao = new Comissao(id++, this.edtNome.getText(),Integer.parseInt(edtValor.getText()));
                     try {
-                add(comissao);
+                add(this.edtNome.getText(),Integer.parseInt(edtValor.getText()));
                     } catch (SQLException ex) {
                         Logger.getLogger(FrmComissao.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ParseException ex) {
@@ -341,9 +340,8 @@ public class FrmComissao extends javax.swing.JFrame {
                     showMessageDialog(this, "Registro adicionado com sucesso!");
             this.limparCampos();
                 } else { //update
-                    Comissao comissao = new Comissao(this.selectedId, this.edtNome.getText(),Integer.parseInt(edtValor.getText()));
                     try {
-                        edit(comissao);
+                        edit(this.edtNome.getText(),Integer.parseInt(edtValor.getText()));
                     } catch (SQLException ex) {
                         Logger.getLogger(FrmComissao.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ParseException ex) {
@@ -370,9 +368,9 @@ public class FrmComissao extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnExcluirActionPerformed
 
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-    
-    }//GEN-LAST:event_btnBuscarActionPerformed
+    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+            this.dispose();
+    }//GEN-LAST:event_btnVoltarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
        this.limparCampos();
@@ -422,12 +420,12 @@ public class FrmComissao extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnNovo;
     private javax.swing.JButton btnSalvar;
+    private javax.swing.JButton btnVoltar;
     private javax.swing.JTextField edtId;
     private javax.swing.JTextField edtNome;
     private javax.swing.JFormattedTextField edtValor;

@@ -5,7 +5,7 @@
  */
 package dao;
 
-import Classes.Cliente;
+import Model.Cliente;
 import dao.ConexaoDAO;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

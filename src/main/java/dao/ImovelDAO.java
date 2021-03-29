@@ -5,7 +5,7 @@
  */
 package dao;
 
-import Classes.Imovel;
+import Model.Imovel;
 import dao.ConexaoDAO;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

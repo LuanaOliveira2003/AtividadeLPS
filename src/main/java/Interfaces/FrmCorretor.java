@@ -6,7 +6,8 @@
 package Interfaces;
 
 
-import Classes.Corretor;
+import Controller.CorretorController;
+import Model.Corretor;
 import dao.CorretorDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -71,8 +72,9 @@ public class FrmCorretor extends javax.swing.JFrame {
     }
     public void carregarTabela() throws SQLException{
           
-         CorretorDAO a = new CorretorDAO();
-         ResultSet data = a.index();
+        CorretorController controller = new CorretorController();
+         
+         ResultSet data = controller.index();
           
          DefaultTableModel model = (DefaultTableModel) this.tblCorretor.getModel();
          
@@ -128,27 +130,28 @@ public class FrmCorretor extends javax.swing.JFrame {
               return true;
           }
       }
-      public void add(Corretor corretor) throws SQLException, ParseException {
+      public void add(String nome, String cpf, String endereco, int idade, int salario) throws SQLException, ParseException {
         DefaultTableModel model = (DefaultTableModel) this.tblCorretor.getModel();
-        corretor.setId(0);
-        int insertedId = CorretorDAO.getInstance().editar(corretor);
-        model.addRow(new Object[]{insertedId,corretor.getNome(), corretor.getCpf(), corretor.getEndereco(), corretor.getIdade(), corretor.getSalario()});
-    }
+        CorretorController controller = new CorretorController();
+        int insertedId = controller.salvar(0, nome ,cpf ,endereco ,idade ,salario);
+        model.addRow(new Object[]{insertedId, nome, cpf, endereco, idade, salario});
+        
+      }
       
-      public void edit(Corretor corretor) throws SQLException, ParseException {
-        this.tblCorretor.setValueAt(corretor.getNome(), row, 1);
-        this.tblCorretor.setValueAt(corretor.getCpf(), row, 2);
-        this.tblCorretor.setValueAt(corretor.getEndereco(), row, 3);
-        this.tblCorretor.setValueAt(corretor.getIdade(), row, 4);
-        this.tblCorretor.setValueAt(corretor.getSalario(), row, 5);
-        int aux = corretor.getId();
-        aux++;
-        corretor.setId(aux);
-        System.out.println("auxiliar" + aux);
-        CorretorDAO.getInstance().editar(corretor);
+      public void edit(String nome, String cpf, String endereco, int idade, int salario) throws SQLException, ParseException {
+        CorretorController controller = new CorretorController();
+        int x = Integer.parseInt((String) this.tblCorretor.getValueAt(row, 0));
+        controller.salvar(x ,nome ,cpf ,endereco ,idade ,salario);
+          
+        this.tblCorretor.setValueAt(nome, row, 1);
+        this.tblCorretor.setValueAt(cpf, row, 2);
+        this.tblCorretor.setValueAt(endereco, row, 3);
+        this.tblCorretor.setValueAt(idade, row, 4);
+        this.tblCorretor.setValueAt(salario, row, 5);
   
     }
       public void delete(int row) throws SQLException {
+        CorretorController controller = new CorretorController();
         Object[] options = {"Sim, remover", "Cancelar!"};
         int n = JOptionPane.showOptionDialog(this,
                 "Tem certeza que deseja excluir o usuário?",
@@ -160,9 +163,9 @@ public class FrmCorretor extends javax.swing.JFrame {
                 options[0]);
 
         if (n == JOptionPane.YES_OPTION) {
-            Corretor corretor = new Corretor();
             DefaultTableModel model = (DefaultTableModel) this.tblCorretor.getModel();
-            CorretorDAO.getInstance().deletar((Integer) this.tblCorretor.getValueAt(row, 0));
+            int x = Integer.parseInt((String) this.tblCorretor.getValueAt(row, 0));
+            controller.delete(x);
             int[] rows = tblCorretor.getSelectedRows();
             for (int i = 0; i < rows.length; i++) {
                 model.removeRow(rows[i] - i);
@@ -179,7 +182,7 @@ public class FrmCorretor extends javax.swing.JFrame {
         btnEditar = new javax.swing.JButton();
         btnSalvar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
-        btnBuscar = new javax.swing.JButton();
+        btnVoltar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         pnlForm = new javax.swing.JPanel();
         edtId = new javax.swing.JTextField();
@@ -237,11 +240,11 @@ public class FrmCorretor extends javax.swing.JFrame {
             }
         });
 
-        btnBuscar.setText("Buscar");
-        btnBuscar.setPreferredSize(new java.awt.Dimension(75, 30));
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+        btnVoltar.setText("Voltar");
+        btnVoltar.setPreferredSize(new java.awt.Dimension(75, 30));
+        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
+                btnVoltarActionPerformed(evt);
             }
         });
 
@@ -351,31 +354,29 @@ public class FrmCorretor extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(pnlForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(65, 65, 65)
-                                .addComponent(lblTitulo)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addComponent(jScrollPane2)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(65, 65, 65)
+                .addComponent(lblTitulo)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -388,7 +389,7 @@ public class FrmCorretor extends javax.swing.JFrame {
                     .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addComponent(pnlForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -424,9 +425,8 @@ public class FrmCorretor extends javax.swing.JFrame {
         if (this.edtNome.getText().isEmpty() || this.edtCpf.getText().isEmpty()|| this.edtEndereco.getText().isEmpty()|| this.edtIdade.getText().isEmpty()|| this.edtSalario.getText().isEmpty()) {
                     showMessageDialog(this, "Por favor, preencha todos os campos!");
                 } else if (this.selectedId == 0) { //create
-                    Corretor corretor = new Corretor(id++, this.edtNome.getText(), this.edtCpf.getText(), this.edtEndereco.getText(), Integer.parseInt(edtIdade.getText()), Integer.parseInt(edtSalario.getText()));
                     try {
-                add(corretor);
+                add(this.edtNome.getText(), this.edtCpf.getText(), this.edtEndereco.getText(), Integer.parseInt(edtIdade.getText()), Integer.parseInt(edtSalario.getText()));
                     } catch (SQLException ex) {
                         Logger.getLogger(FrmCorretor.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ParseException ex) {
@@ -435,9 +435,8 @@ public class FrmCorretor extends javax.swing.JFrame {
                     showMessageDialog(this, "Registro adicionado com sucesso!");
             this.limparCampos();
                 } else { //update
-                    Corretor corretor = new Corretor(this.selectedId, this.edtNome.getText(), this.edtCpf.getText(), this.edtEndereco.getText(),Integer.parseInt(edtIdade.getText()), Integer.parseInt(edtSalario.getText()));
                     try {
-                        edit(corretor);
+                        edit(this.edtNome.getText(), this.edtCpf.getText(), this.edtEndereco.getText(), Integer.parseInt(edtIdade.getText()), Integer.parseInt(edtSalario.getText()));
                     } catch (SQLException ex) {
                         Logger.getLogger(FrmCorretor.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (ParseException ex) {
@@ -464,9 +463,9 @@ public class FrmCorretor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnExcluirActionPerformed
 
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
- 
-    }//GEN-LAST:event_btnBuscarActionPerformed
+    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+            this.dispose();
+    }//GEN-LAST:event_btnVoltarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
        this.limparCampos();
@@ -505,12 +504,12 @@ public class FrmCorretor extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnNovo;
     private javax.swing.JButton btnSalvar;
+    private javax.swing.JButton btnVoltar;
     private javax.swing.JFormattedTextField edtCpf;
     private javax.swing.JTextField edtEndereco;
     private javax.swing.JTextField edtId;

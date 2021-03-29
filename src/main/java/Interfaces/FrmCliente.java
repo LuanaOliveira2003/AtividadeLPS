@@ -5,7 +5,8 @@
  */
 package Interfaces;
 
-import Classes.Cliente;
+import Controller.ClienteController;
+import Model.Cliente;
 import dao.ClienteDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,9 +71,9 @@ public class FrmCliente extends javax.swing.JFrame {
     }
 
       public void carregarTabela() throws SQLException{
-          
-         ClienteDAO a = new ClienteDAO();
-         ResultSet data = a.index();
+         ClienteController controller = new ClienteController();
+         
+         ResultSet data = controller.index();
           
          DefaultTableModel model = (DefaultTableModel) this.tblCliente.getModel();
          
@@ -128,26 +129,27 @@ public class FrmCliente extends javax.swing.JFrame {
           }
       }
       
-      public void add(Cliente cliente) throws SQLException, ParseException {
+      public void add(String nome, String cpf, String endereco, int idade) throws SQLException, ParseException {
         DefaultTableModel model = (DefaultTableModel) this.tblCliente.getModel();
-        cliente.setId(0);
-        int insertedId = ClienteDAO.getInstance().editar(cliente);
-        model.addRow(new Object[]{insertedId, cliente.getNome(), cliente.getCpf(), cliente.getEndereco(), cliente.getIdade()});
-    }
+        ClienteController controller = new ClienteController();
+        int insertedId = controller.salvar(0, nome ,cpf ,endereco ,idade);
+        model.addRow(new Object[]{insertedId, nome, cpf, endereco, idade});
+        
+      }
       
-      public void edit(Cliente cliente) throws SQLException, ParseException {
-        this.tblCliente.setValueAt(cliente.getNome(), row, 1);
-        this.tblCliente.setValueAt(cliente.getCpf(), row, 2);
-        this.tblCliente.setValueAt(cliente.getEndereco(), row, 3);
-        this.tblCliente.setValueAt(cliente.getIdade(), row, 4);    
-        int aux = cliente.getId();
-        aux++;
-        cliente.setId(aux);
-        System.out.println("auxiliar" + aux);
-        ClienteDAO.getInstance().editar(cliente);
-  
+      public void edit(String nome, String cpf, String endereco, int idade) throws SQLException, ParseException {
+        ClienteController controller = new ClienteController();
+        int x = Integer.parseInt((String) this.tblCliente.getValueAt(row, 0));
+        controller.salvar(x ,nome ,cpf ,endereco ,idade);
+          
+        this.tblCliente.setValueAt(nome, row, 1);
+        this.tblCliente.setValueAt(cpf, row, 2);
+        this.tblCliente.setValueAt(endereco, row, 3);
+        this.tblCliente.setValueAt(idade, row, 4);
+   
     }
       public void delete(int row) throws SQLException {
+        ClienteController controller = new ClienteController();
         Object[] options = {"Sim, remover", "Cancelar!"};
         int n = JOptionPane.showOptionDialog(this,
                 "Tem certeza que deseja excluir o usuário?",
@@ -159,10 +161,9 @@ public class FrmCliente extends javax.swing.JFrame {
                 options[0]);
 
         if (n == JOptionPane.YES_OPTION) {
-            Cliente cliente = new Cliente();
             DefaultTableModel model = (DefaultTableModel) this.tblCliente.getModel();
-            
-            ClienteDAO.getInstance().deletar((Integer) this.tblCliente.getValueAt(row, 0));
+            int x = Integer.parseInt((String) this.tblCliente.getValueAt(row, 0));
+            controller.delete(x);
             int[] rows = tblCliente.getSelectedRows();
             for (int i = 0; i < rows.length; i++) {
                 model.removeRow(rows[i] - i);
@@ -180,7 +181,7 @@ public class FrmCliente extends javax.swing.JFrame {
         btnEditar = new javax.swing.JButton();
         btnSalvar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
-        btnBuscar = new javax.swing.JButton();
+        btnVoltar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         pnlForm = new javax.swing.JPanel();
         edtId = new javax.swing.JTextField();
@@ -236,11 +237,11 @@ public class FrmCliente extends javax.swing.JFrame {
             }
         });
 
-        btnBuscar.setText("Buscar");
-        btnBuscar.setPreferredSize(new java.awt.Dimension(75, 30));
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+        btnVoltar.setText("Voltar");
+        btnVoltar.setPreferredSize(new java.awt.Dimension(75, 30));
+        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
+                btnVoltarActionPerformed(evt);
             }
         });
 
@@ -265,6 +266,12 @@ public class FrmCliente extends javax.swing.JFrame {
 
         lblEndereco.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblEndereco.setText("Endereço");
+
+        edtCpf.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                edtCpfFocusLost(evt);
+            }
+        });
 
         lblCpf.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCpf.setText("CPF");
@@ -343,25 +350,27 @@ public class FrmCliente extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pnlForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblTitulo)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(pnlForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2))
+                            .addComponent(lblTitulo))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -374,7 +383,7 @@ public class FrmCliente extends javax.swing.JFrame {
                     .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addComponent(pnlForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -410,9 +419,8 @@ public class FrmCliente extends javax.swing.JFrame {
         if (this.edtNome.getText().isEmpty() || this.edtCpf.getText().isEmpty()|| this.edtEndereco.getText().isEmpty()|| this.edtIdade.getText().isEmpty()) {
             showMessageDialog(this, "Por favor, preencha todos os campos!");
         } else if (this.selectedId == 0) { //create
-            Cliente cliente = new Cliente(id++, this.edtNome.getText(), this.edtCpf.getText(), this.edtEndereco.getText(), Integer.parseInt(edtIdade.getText()));
             try {
-                add(cliente);
+                add(this.edtNome.getText(), this.edtCpf.getText(), this.edtEndereco.getText(), Integer.parseInt(edtIdade.getText()));
             } catch (SQLException ex) {
                 Logger.getLogger(FrmCliente.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ParseException ex) {
@@ -421,9 +429,8 @@ public class FrmCliente extends javax.swing.JFrame {
             showMessageDialog(this, "Registro adicionado com sucesso!");
             this.limparCampos();
         } else { //update
-            Cliente cliente = new Cliente(this.selectedId, this.edtNome.getText(), this.edtCpf.getText(), this.edtEndereco.getText(),Integer.parseInt(edtIdade.getText()));
             try {
-                edit(cliente);
+                edit(this.edtNome.getText(), this.edtCpf.getText(), this.edtEndereco.getText(), Integer.parseInt(edtIdade.getText()));
             } catch (SQLException ex) {
                 Logger.getLogger(FrmCliente.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ParseException ex) {
@@ -452,14 +459,21 @@ public class FrmCliente extends javax.swing.JFrame {
                   
     }//GEN-LAST:event_btnExcluirActionPerformed
 
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-      
-    }//GEN-LAST:event_btnBuscarActionPerformed
+    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+
+       this.dispose();
+    }//GEN-LAST:event_btnVoltarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
        this.limparCampos();
         this.habilitarCampos(false);
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void edtCpfFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_edtCpfFocusLost
+  if(verificarCPF(edtCpf.getText())== false){
+            showMessageDialog(this, "Digite um cpf valido!");
+        };
+    }//GEN-LAST:event_edtCpfFocusLost
 
     /**
      * @param args the command line arguments
@@ -504,12 +518,12 @@ public class FrmCliente extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnNovo;
     private javax.swing.JButton btnSalvar;
+    private javax.swing.JButton btnVoltar;
     private javax.swing.JFormattedTextField edtCpf;
     private javax.swing.JTextField edtEndereco;
     private javax.swing.JTextField edtId;
